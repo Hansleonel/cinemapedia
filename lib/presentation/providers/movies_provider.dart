@@ -2,6 +2,7 @@ import 'package:cinemapedia/domain/entities/movie.dart';
 import 'package:cinemapedia/presentation/providers/movie_repository_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+bool isLoading = false;
 // Ahora crearemos un Provider de tipo personalizado,
 // es decir, de tipo StateNotifierProvider.
 final nowPlayingMoviesProvider = StateNotifierProvider<
@@ -35,6 +36,11 @@ class MoviesNotifier extends StateNotifier<List<Movie>> {
   MoviesNotifier({required this.fetchMoreMovies}) : super([]);
 
   Future<void> loadNextPage() async {
+    if (isLoading) return;
+    print(
+      'cargando movies del servicio con la ayuda del StateNotifierProvider',
+    );
+    isLoading = true;
     currentPage++;
     final List<Movie> movies = await fetchMoreMovies(page: currentPage);
 
@@ -44,5 +50,7 @@ class MoviesNotifier extends StateNotifier<List<Movie>> {
     // Esto nos sirve porque va acumulando películas gracias a la paginación.
     // No debemos usar state.addAll(movies) puesto que no nos garantiza que se cree un nuevo estado, ya que solo modifica la lista que ya se tiene.
     state = [...state, ...movies];
+    await Future.delayed(Duration(microseconds: 200));
+    isLoading = false;
   }
 }

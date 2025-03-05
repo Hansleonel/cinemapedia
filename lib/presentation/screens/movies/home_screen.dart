@@ -4,6 +4,8 @@ import 'package:cinemapedia/presentation/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../providers/providers.dart';
+
 class HomeScreen extends StatelessWidget {
   static const name = 'home-screen';
   const HomeScreen({super.key});
@@ -13,6 +15,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       //appBar: AppBar(title: Text('Home Screen')),
       body: _HomeView(),
+      bottomNavigationBar: CustomButtomNavigation(),
     );
   }
 }
@@ -42,16 +45,18 @@ class _HomeViewState extends ConsumerState<_HomeView> {
   Widget build(BuildContext context) {
     final List<Movie> nowPlayingMovies = ref.watch(nowPlayingMoviesProvider);
 
-    if (nowPlayingMovies.length == 0) {
+    final List<Movie> slideshowMovies = ref.watch(moviesSlideShowProvider);
+
+    /* if (nowPlayingMovies.isEmpty) {
       return Center(child: CircularProgressIndicator());
-    }
+    } */
 
     return Column(
       children: [
         // CustomAppBar toma su espacion necesario
         CustomAppbar(),
-        // toma todo el espacio restante del column luego de que otros widgets hayan tomado su espacio
-        Expanded(
+        // Expanded toma todo el espacio restante del column luego de que otros widgets hayan tomado su espacio
+        /*Expanded(
           child: ListView.builder(
             itemCount: nowPlayingMovies.length,
             itemBuilder: (context, index) {
@@ -59,6 +64,19 @@ class _HomeViewState extends ConsumerState<_HomeView> {
               return ListTile(title: Text(movie.title));
             },
           ),
+        ),*/
+        // Carrousel de peliculas now_playing
+        MoviesSlideshow(movies: slideshowMovies),
+        // ListView de peliculas now_playing
+        MovieHorizontalListview(
+          movies: nowPlayingMovies,
+          title: 'En Cines',
+          subtitle: 'Lunes 20',
+          loadNextPage: () {
+            // en este caso estamos cambiando el estado del provider de tipo personalizado es decir un StateNotifierProvider
+            // con .notifier podemos acceder a las operaciones que podemos realizar con el provider
+            ref.read(nowPlayingMoviesProvider.notifier).loadNextPage();
+          },
         ),
       ],
     );
