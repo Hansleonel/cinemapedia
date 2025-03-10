@@ -22,9 +22,42 @@ class MoviedbDatasourceImpl implements MoviesDatasource {
       '/movie/now_playing',
       queryParameters: {'page': page},
     );
-    final MovieDbResponse moviDBresponse = MovieDbResponse.fromJson(
-      response.data,
+
+    return _jsonToMovies(response.data);
+  }
+
+  @override
+  Future<List<Movie>> getPopular({int page = 1}) async {
+    final response = await dio.get(
+      '/movie/popular',
+      queryParameters: {'page': page},
     );
+
+    return _jsonToMovies(response.data);
+  }
+
+  @override
+  Future<List<Movie>> getUpcoming({int page = 1}) async {
+    final response = await dio.get(
+      '/movie/upcoming',
+      queryParameters: {'page': page},
+    );
+
+    return _jsonToMovies(response.data);
+  }
+
+  @override
+  Future<List<Movie>> getTopRated({int page = 1}) async {
+    final response = await dio.get(
+      '/movie/top_rated',
+      queryParameters: {'page': page},
+    );
+
+    return _jsonToMovies(response.data);
+  }
+
+  List<Movie> _jsonToMovies(Map<String, dynamic> json) {
+    final moviDBresponse = MovieDbResponse.fromJson(json);
 
     // Con las siguientes líneas podemos usar el mapper Moviemapper creado
     // para convertir los datos de MovieDb a nuestra entidad Movie,

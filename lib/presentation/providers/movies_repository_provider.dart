@@ -6,6 +6,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // Los Providers son objetos que NO pueden cambiar su valor una vez establecidos.
 // En este caso, el valor siempre será del tipo MoviesRepositoryImpl,
 // independientemente de la fuente de datos.
-final movieRepositoryProvider = Provider((ref) {
+final Provider<MoviesRepositoryImpl> moviesRepositoryProvider = Provider((ref) {
   return MoviesRepositoryImpl(MoviedbDatasourceImpl());
 });

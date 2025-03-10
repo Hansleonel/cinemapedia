@@ -1,8 +1,24 @@
 import 'package:cinemapedia/domain/entities/movie.dart';
-import 'package:cinemapedia/presentation/providers/movie_repository_provider.dart';
+import 'package:cinemapedia/presentation/providers/movies_repository_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-bool isLoading = false;
+final popularMoviesProvider =
+    StateNotifierProvider<MoviesNotifier, List<Movie>>((ref) {
+      final fetchMoreMovies = ref.watch(moviesRepositoryProvider).getPopular;
+      return MoviesNotifier(fetchMoreMovies: fetchMoreMovies);
+    });
+
+final upcomingMoviesProvider =
+    StateNotifierProvider<MoviesNotifier, List<Movie>>((ref) {
+      final fetchMoreMovies = ref.watch(moviesRepositoryProvider).getUpcoming;
+      return MoviesNotifier(fetchMoreMovies: fetchMoreMovies);
+    });
+
+final topRatedMoviesProvider =
+    StateNotifierProvider<MoviesNotifier, List<Movie>>((ref) {
+      final fetchMoreMovies = ref.watch(moviesRepositoryProvider).getTopRated;
+      return MoviesNotifier(fetchMoreMovies: fetchMoreMovies);
+    });
 // Ahora crearemos un Provider de tipo personalizado,
 // es decir, de tipo StateNotifierProvider.
 final nowPlayingMoviesProvider = StateNotifierProvider<
@@ -13,7 +29,7 @@ final nowPlayingMoviesProvider = StateNotifierProvider<
   // En este caso, hacemos la referencia a nuestro movieRepositoryProvider,
   // que como sabemos, hace el llamado a MoviesRepositoryImpl, el cual tiene el método getNowPlaying().
   // Este método, a su vez, usa la fuente de datos MoviedbDatasourceImpl que hace el llamado al API de MovieDB para obtener el listado de películas.
-  final fetchMoreMovies = ref.watch(movieRepositoryProvider).getNowPlaying;
+  final fetchMoreMovies = ref.watch(moviesRepositoryProvider).getNowPlaying;
 
   // Le pasamos la función fetchMoreMovies que tiene que ser del mismo tipo,
   // en este caso, Future<List<Movie>> que acepta el parámetro opcional page, que es el número de página.
@@ -27,6 +43,7 @@ typedef MovieCallBack = Future<List<Movie>> Function({int page});
 
 class MoviesNotifier extends StateNotifier<List<Movie>> {
   int currentPage = 0;
+  bool isLoading = false;
 
   // Esta línea:
   // Future<List<Movie>> Function({int page}) fetchMoreMovies
